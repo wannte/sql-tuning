@@ -11,8 +11,33 @@ $ docker run -d -p 23306:3306 brainbackdoor/data-tuning:0.0.1
 
 <div style="line-height:1em"><br style="clear:both" ></div>
 
+
 > 활동중인(Active) 부서의 현재 부서관리자 중 연봉 상위 5위안에 드는 사람들이 최근에 각 지역별로 언제 퇴실했는지 조회해보세요.
 (사원번호, 이름, 연봉, 직급명, 지역, 입출입구분, 입출입시간)
+
+
+### 1. 쿼리 작성만으로 1s 이하로 반환한다.
+
+#### sql문
+```sql
+select  TOP5MANAGER_NAME.사원번호, 이름, 연봉, 직급명, 입출입시간, 지역, 입출입구분 from
+  (select TOP5MANAGER.사원번호, 이름, 연봉, 직급명 from
+    (select TOP5.사원번호, 연봉, 직급명 from 
+      (SELECT 활동부서관리자.사원번호, 연봉 from 
+        (SELECT 사원번호 
+          from (SELECT * FROM 부서 where 비고="ACTIVE") as 활동부서,
+            (select * from 부서관리자 where 종료일자 > "2021-10-11") as 활동관리자 
+            where 활동부서.부서번호=활동관리자.부서번호) as 활동부서관리자, 
+          급여 where 활동부서관리자.사원번호=급여.사원번호 and 급여.종료일자 > "2021-10-11" 
+        order by 급여.연봉 desc limit 5) as TOP5,
+      직급 where TOP5.사원번호=직급.사원번호 and 직급.종료일자 > "2021-10-11") as TOP5MANAGER,
+    사원 where TOP5MANAGER.사원번호=사원.사원번호) as TOP5MANAGER_NAME,
+  사원출입기록 where TOP5MANAGER_NAME.사원번호 = 사원출입기록.사원번호 and 사원출입기록.입출입구분 ="O" order by TOP5MANAGER_NAME.연봉 desc, 사원출입기록.지역
+```
+
+#### 결과
+
+![Screenshot from 2021-10-11 15-31-45](https://user-images.githubusercontent.com/49307266/136743140-c9bd7df3-15ff-4836-9866-dd86815e15ce.png)
 
 
 <div style="line-height:1em"><br style="clear:both" ></div>
