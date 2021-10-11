@@ -35,10 +35,20 @@ select  TOP5MANAGER_NAME.사원번호, 이름, 연봉, 직급명, 입출입시�
   사원출입기록 where TOP5MANAGER_NAME.사원번호 = 사원출입기록.사원번호 and 사원출입기록.입출입구분 ="O" order by TOP5MANAGER_NAME.연봉 desc, 사원출입기록.지역
 ```
 
-#### 결과
+#### 결과 (0.357s)
 
 ![Screenshot from 2021-10-11 15-31-45](https://user-images.githubusercontent.com/49307266/136743140-c9bd7df3-15ff-4836-9866-dd86815e15ce.png)
 
+### 2. 인덱스 설정을 추가하여 50 ms 이하로 반환한다.
+
+![before](https://user-images.githubusercontent.com/49307266/136744678-c637691c-2699-4d95-ae54-59f3afb08a3f.png)
+분석을 해보면, 마지막 사원출입기록의 Table Full Scan에서 많은 비용이 발생하는 것을 확인할 수 있다. 사원번호에 index를 추가해주었을 때, 대폭 감소할 수 있었다.
+
+![after](https://user-images.githubusercontent.com/49307266/136745406-5b0c3138-8b77-401a-8075-97fdb8c2b7fc.png)
+![Screenshot from 2021-10-11 15-54-51](https://user-images.githubusercontent.com/49307266/136745556-fb375a4d-0665-4456-adbb-7877387238b1.png)
+
+#### 결과 (0.0012s)
+![Screenshot from 2021-10-11 15-52-10](https://user-images.githubusercontent.com/49307266/136745230-09025c0d-f756-405a-8ec6-9d2dfdc42f62.png)
 
 <div style="line-height:1em"><br style="clear:both" ></div>
 <div style="line-height:1em"><br style="clear:both" ></div>
