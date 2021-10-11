@@ -94,7 +94,41 @@ covid 테이블의 Row가 많기에, covid.hospital_id의 Index와 hospital 전�
 ![Screenshot from 2021-10-11 16-56-18](https://user-images.githubusercontent.com/49307266/136753722-25e52782-f60e-4146-9601-2276deb132ec.png)
 straight_join을 사용해서 강제로 covid를 드라이빙 테이블로. hospial은 id로 인덱스 접근.
     
-    - [ ] 프로그래밍이 취미인 학생 혹은 주니어(0-2년)들이 다닌 병원 이름을 반환하고 user.id 기준으로 정렬하세요. (covid.id, hospital.name, user.Hobby, user.DevType, user.YearsCoding)
+### 3. 프로그래밍이 취미인 학생 혹은 주니어(0-2년)들이 다닌 병원 이름을 반환하고 user.id 기준으로 정렬하세요. (covid.id, hospital.name, user.Hobby, user.DevType, user.YearsCoding)
+
+![Screenshot from 2021-10-11 17-17-04](https://user-images.githubusercontent.com/49307266/136756275-9284a57d-cf25-4986-b754-0fdbaea4f970.png)
+index 설정을 해주었지만, 전체를 다 조회하는 것을 확인할 수 있다.
+```sql
+SELECT 
+    COVID_NEWBIE.id,
+    hospital.name,
+    COVID_NEWBIE.hobby,
+    COVID_NEWBIE.dev_type,
+    COVID_NEWBIE.years_coding
+FROM
+    (SELECT 
+        NEWBIE.id,
+            covid.hospital_id,
+            NEWBIE.hobby,
+            NEWBIE.dev_type,
+            NEWBIE.years_coding
+    FROM
+        (SELECT 
+        id, hobby, dev_type, years_coding
+    FROM
+        programmer
+    WHERE
+        hobby = 'yes'
+            OR years_coding = '0-2 years') AS NEWBIE, covid
+    WHERE
+        NEWBIE.id = covid.id) AS COVID_NEWBIE,
+    hospital
+WHERE
+    COVID_NEWBIE.hospital_id = hospital.id
+```
+
+![Screenshot from 2021-10-11 17-48-37](https://user-images.githubusercontent.com/49307266/136761151-804bb82f-6dfe-4bc5-94d9-93c688b47b55.png)
+
 
     - [ ] 서울대병원에 다닌 20대 India 환자들을 병원에 머문 기간별로 집계하세요. (covid.Stay)
 
