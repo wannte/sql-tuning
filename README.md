@@ -71,22 +71,28 @@ $ docker run -d -p 13306:3306 brainbackdoor/data-subway:0.0.2
 [Screenshot from 2021-10-11 16-52-03](https://user-images.githubusercontent.com/49307266/136753849-a87b4542-d39b-4e1a-a5af-2b67112f4f8b.png)
 
 
-- [x] 주어진 데이터셋을 활용하여 아래 조회 결과를 100ms 이하로 반환
+> 주어진 데이터셋을 활용하여 아래 조회 결과를 100ms 이하로 반환
 
-    - [x] [Coding as a  Hobby](https://insights.stackoverflow.com/survey/2018#developer-profile-_-coding-as-a-hobby) 와 같은 결과를 반환하세요.
+#### 1. [Coding as a  Hobby](https://insights.stackoverflow.com/survey/2018#developer-profile-_-coding-as-a-hobby) 와 같은 결과를 반환하세요.
 ![Screenshot from 2021-10-11 16-04-01](https://user-images.githubusercontent.com/49307266/136746732-2ce139b9-7f13-41a7-9c31-6fb8d63f50cf.png)
 ![Screenshot from 2021-10-11 16-04-49](https://user-images.githubusercontent.com/49307266/136746737-772cc711-04f2-4b32-8b6f-ae0fde635493.png)
 index 사용(0.215s -> 0.067s)
-    - [x] 각 프로그래머별로 해당하는 병원 이름을 반환하세요.  (covid.id, hospital.name)
+
+#### 2. 각 프로그래머별로 해당하는 병원 이름을 반환하세요.  (covid.id, hospital.name)
+```sql
+SELECT covid.id, hospital.name 
+FROM covid, hospital 
+where covid.hospital_id = hospital.id;
+```
     
-    $1. index 없이
+1. index 없이
 ![Screenshot from 2021-10-11 16-54-41](https://user-images.githubusercontent.com/49307266/136753399-19dc28a2-0824-4930-a8b4-59a2893d872d.png)
-    $2. index 도입 (covid_id: unique index, covid_hospital_id: index, hospital_id: unique_index)
-    covid 테이블의 Row가 많기에, covid.hospital_id의 Index와 hospital 전체를 순회하는 것을 확인할 수 있다.
-    ![Screenshot from 2021-10-11 16-56-43](https://user-images.githubusercontent.com/49307266/136753643-56de5ca8-4633-47ba-aa7e-f29b998b7f38.png)
-    $3. straight_join & index 도입 (covid_id: unique index, covid_hospital_id: index, hospital_id: unique_index)
-    ![Screenshot from 2021-10-11 16-56-18](https://user-images.githubusercontent.com/49307266/136753722-25e52782-f60e-4146-9601-2276deb132ec.png)
-    straight_join을 사용해서 강제로 covid를 드라이빙 테이블로. hospial은 id로 인덱스 접근.
+2. index 도입 (covid_id: unique index, covid_hospital_id: index, hospital_id: unique_index)
+covid 테이블의 Row가 많기에, covid.hospital_id의 Index와 hospital 전체를 순회하는 것을 확인할 수 있다.
+![Screenshot from 2021-10-11 16-56-43](https://user-images.githubusercontent.com/49307266/136753643-56de5ca8-4633-47ba-aa7e-f29b998b7f38.png)
+3. straight_join & index 도입 (covid_id: unique index, covid_hospital_id: index, hospital_id: unique_index)
+![Screenshot from 2021-10-11 16-56-18](https://user-images.githubusercontent.com/49307266/136753722-25e52782-f60e-4146-9601-2276deb132ec.png)
+straight_join을 사용해서 강제로 covid를 드라이빙 테이블로. hospial은 id로 인덱스 접근.
     
     - [ ] 프로그래밍이 취미인 학생 혹은 주니어(0-2년)들이 다닌 병원 이름을 반환하고 user.id 기준으로 정렬하세요. (covid.id, hospital.name, user.Hobby, user.DevType, user.YearsCoding)
 
